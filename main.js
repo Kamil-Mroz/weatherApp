@@ -34,8 +34,13 @@ const weatherCode = {
 
 const form = document.querySelector(".form-weather");
 const date = document.querySelector(".date");
-const time = document.querySelector(".time");
 const error = document.querySelector(".error");
+const capitalEl = document.querySelector(".capital-name");
+const imgBox = document.querySelector(".img-box");
+const img = document.querySelector(".img");
+const tempEl = document.querySelector(".temp");
+const weatherEl = document.querySelector(".weather-type");
+
 form.addEventListener("submit", async function (e) {
   e.preventDefault();
   try {
@@ -52,19 +57,18 @@ form.addEventListener("submit", async function (e) {
 
     if (!res.ok) throw new Error(`Country not found ${res.status}`);
     const [data] = await res.json();
-    const [capital] = data.capital;
-
+    const { capital } = data;
     const lat = data.capitalInfo.latlng[0].toFixed(2);
     const lng = data.capitalInfo.latlng[1].toFixed(2);
     const flag = data.flags.svg;
 
-    await getWeather(lat, lng, flag, capital);
+    await getWeather(lat, lng, capital, flag);
   } catch (err) {
     displayError(err);
   }
 });
 
-const getWeather = async (lat, lng, flag, capital) => {
+const getWeather = async (lat, lng, capital, flag) => {
   try {
     const res = await fetch(
       `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true&daily=${[
@@ -100,6 +104,12 @@ const getWeather = async (lat, lng, flag, capital) => {
     const h = daily_units.precipitation_hours;
     const wind = daily_units.windspeed_10m_max;
 
+    capitalEl.textContent = capital;
+    img.style.display = "block";
+    img.src = flag;
+    tempEl.textContent = weather.temperature + " " + celsius;
+    weatherEl.textContent = weatherCode[weather.weathercode];
+
     // ! time;
     const now = new Date(weather.time);
     const options = {
@@ -124,7 +134,7 @@ const getWeather = async (lat, lng, flag, capital) => {
       //   tempMax[i],
       //   tempMin[i],
       //   windMax[i]);
-      console.log(day[i]);
+      // console.log(day[i]);
     }
   } catch (err) {
     displayError(err);
