@@ -5,20 +5,27 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style.css" />
     <script defer src="main.js"></script>
   </head>
   <body>
-    <header class="header">Weather APP</header>
+    <header class="header">
+      <h1>Capital weather</h1>
+    </header>
     <main class="main">
-      Here display App
-      <br />
       <form action="" class="form-weather">
         <label for="country">Country</label>
-        <input type="text" id="country" name="country" placeholder="Spain" />
+        <input type="text" id="country" name="country" placeholder="Poland" />
         <button class="btn">Check!</button>
-        <div class="date"></div>
+        <span class="error"></span>
       </form>
+      <div class="date"></div>
     </main>
     <footer class="footer">
       <a href="https://restcountries.com/#api-endpoints-v3-capital-city"

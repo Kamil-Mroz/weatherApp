@@ -34,10 +34,12 @@ const weatherCode = {
 
 const form = document.querySelector(".form-weather");
 const date = document.querySelector(".date");
-
+const time = document.querySelector(".time");
+const error = document.querySelector(".error");
 form.addEventListener("submit", async function (e) {
   e.preventDefault();
   try {
+    date.textContent = "";
     const country = document.getElementById("country").value;
 
     if (!country) return;
@@ -48,24 +50,21 @@ form.addEventListener("submit", async function (e) {
 
     document.getElementById("country").value = "";
 
-    if (!res.ok) throw new Error(`Country no found ${res.status}`);
+    if (!res.ok) throw new Error(`Country not found ${res.status}`);
     const [data] = await res.json();
     const [capital] = data.capital;
 
     const lat = data.capitalInfo.latlng[0].toFixed(2);
     const lng = data.capitalInfo.latlng[1].toFixed(2);
     const flag = data.flags.svg;
-    console.log(data);
-    const timezoneCode = data.timezones[0].slice(0, 3);
-    const langISO = data.cca2.toLowerCase();
-    console.log(timezoneCode);
-    await getWeather(lat, lng, timezoneCode, flag, capital, langISO);
+
+    await getWeather(lat, lng, flag, capital);
   } catch (err) {
-    console.error(err);
+    displayError(err);
   }
 });
 
-const getWeather = async (lat, lng, timezoneCode, flag, capital, langISO) => {
+const getWeather = async (lat, lng, flag, capital) => {
   try {
     const res = await fetch(
       `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true&daily=${[
@@ -76,27 +75,83 @@ const getWeather = async (lat, lng, timezoneCode, flag, capital, langISO) => {
         "sunrise",
         "sunset",
         "windspeed_10m_max",
-      ]}&timezone=${timezoneCode}`
+      ]}&timezone=auto`
     );
     if (!res.ok) throw new Error(`Data not found ${res.status}`);
+    displayError("");
     const data = await res.json();
 
-    const temperatureUnit = data.daily_units.temperature_2m_max;
-    const precipitationUnit = data.daily_units.precipitation_sum;
-    const precipitationUnitHour = data.daily_units.precipitation_hours;
-    const windUnit = data.daily_units.windspeed_10m_max;
-    const { current_weather } = data;
+    const {
+      current_weather: weather,
+      daily: {
+        precipitation_hours: precipitationH,
+        precipitation_sum: precipitationSum,
+        sunrise,
+        sunset,
+        temperature_2m_max: tempMax,
+        temperature_2m_min: tempMin,
+        time: day,
+        windspeed_10m_max: windMax,
+      },
+      daily_units,
+    } = data;
+    const celsius = daily_units.temperature_2m_max;
+    const mm = daily_units.precipitation_sum;
+    const h = daily_units.precipitation_hours;
+    const wind = daily_units.windspeed_10m_max;
 
     // ! time;
-    const now = new Date(current_weather.time);
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const seconds = now.getSeconds();
-    date.textContent = new Intl.DateTimeFormat(langISO).format(now);
+    const now = new Date(weather.time);
+    const options = {
+      hour: "numeric",
+      minute: "numeric",
+      seconds: "numeric",
+      day: "numeric",
+      month: "2-digit",
+      year: "numeric",
+      weekday: "long",
+    };
+    const locale = navigator.language;
 
+    date.textContent = new Intl.DateTimeFormat(locale, options).format(now);
     console.log(data);
-    // for (let i = 0; i < 7; i++) {}
+    for (let i = 0; i < 7; i++) {
+      // createCard(precipitationH[i],
+      //   precipitationSum[i],
+      //   sunrise[i],
+      //   sunset[i],
+      //   day[i],
+      //   tempMax[i],
+      //   tempMin[i],
+      //   windMax[i]);
+      console.log(day[i]);
+    }
   } catch (err) {
-    console.error(err);
+    displayError(err);
   }
 };
+
+function createCard(
+  precipitationH,
+  precipitationSum,
+  sunrise,
+  sunset,
+  day,
+  tempMax,
+  tempMin,
+  windMax
+) {
+  const div = document.createElement("div");
+  div.classList.add("card");
+
+  const innerCard = `
+    
+    
+    `;
+
+  div.innerHTML = innerCard;
+}
+
+function displayError(message) {
+  error.textContent = message;
+}
