@@ -30,11 +30,9 @@ body {
 }
 
 .main {
-  padding: 4rem;
-  padding-bottom: 9rem;
-  max-width: 120rem;
+  max-width: 140rem;
   margin-inline: auto;
-  height: 60rem;
+  min-height: 60rem;
 }
 
 .form-weather {
@@ -86,6 +84,7 @@ body {
   justify-content: center;
   align-items: center;
   gap: 5rem;
+  margin-bottom: 4rem;
 }
 .capital h2 {
   margin-bottom: 1rem;
@@ -99,6 +98,25 @@ body {
 }
 .date {
   font-size: 1.6rem;
+}
+
+.carousel {
+  min-height: 45rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #f8f9fa;
+  border-radius: 10px;
+  gap: 2rem;
+  padding: 4rem 0;
+  width: 30rem;
+  text-align: center;
 }
 
 .footer {
