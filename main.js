@@ -40,6 +40,7 @@ const imgBox = document.querySelector(".img-box");
 const img = document.querySelector(".img");
 const tempEl = document.querySelector(".temp");
 const weatherEl = document.querySelector(".weather-type");
+const carouselEl = document.querySelector(".carousel");
 
 form.addEventListener("submit", async function (e) {
   e.preventDefault();
@@ -70,12 +71,12 @@ form.addEventListener("submit", async function (e) {
 
 const getWeather = async (lat, lng, capital, flag) => {
   try {
+    carouselEl.innerHTML = "";
     const res = await fetch(
       `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true&daily=${[
         "temperature_2m_max",
         "temperature_2m_min",
         "precipitation_sum",
-        "precipitation_hours",
         "sunrise",
         "sunset",
         "windspeed_10m_max",
@@ -88,7 +89,6 @@ const getWeather = async (lat, lng, capital, flag) => {
     const {
       current_weather: weather,
       daily: {
-        precipitation_hours: precipitationH,
         precipitation_sum: precipitationSum,
         sunrise,
         sunset,
@@ -101,7 +101,6 @@ const getWeather = async (lat, lng, capital, flag) => {
     } = data;
     const celsius = daily_units.temperature_2m_max;
     const mm = daily_units.precipitation_sum;
-    const h = daily_units.precipitation_hours;
     const wind = daily_units.windspeed_10m_max;
 
     capitalEl.textContent = capital;
@@ -110,7 +109,6 @@ const getWeather = async (lat, lng, capital, flag) => {
     tempEl.textContent = weather.temperature + " " + celsius;
     weatherEl.textContent = weatherCode[weather.weathercode];
 
-    // ! time;
     const now = new Date(weather.time);
     const options = {
       hour: "numeric",
@@ -121,20 +119,45 @@ const getWeather = async (lat, lng, capital, flag) => {
       year: "numeric",
       weekday: "long",
     };
+    const dailyOptionsSun = {
+      hour: "numeric",
+      minute: "numeric",
+    };
+    const dailyOptionsDay = {
+      day: "numeric",
+      month: "2-digit",
+      year: "numeric",
+      weekday: "short",
+    };
     const locale = navigator.language;
-
     date.textContent = new Intl.DateTimeFormat(locale, options).format(now);
-    console.log(data);
+
     for (let i = 0; i < 7; i++) {
-      // createCard(precipitationH[i],
-      //   precipitationSum[i],
-      //   sunrise[i],
-      //   sunset[i],
-      //   day[i],
-      //   tempMax[i],
-      //   tempMin[i],
-      //   windMax[i]);
-      // console.log(day[i]);
+      let dayTime = new Date(day[i]);
+      let sunriseTime = new Date(sunrise[i]);
+      let sunsetTime = new Date(sunset[i]);
+      let html = `
+      <div class="card">
+      <div class="day">${new Intl.DateTimeFormat(
+        locale,
+        dailyOptionsDay
+      ).format(dayTime)}</div>
+      <div class="temp-min-max">Temp: ${tempMax[i] + " " + celsius} / ${
+        tempMin[i] + " " + celsius
+      }</div>
+      <div class="rain">Rain: ${precipitationSum[i] + " " + mm}</div>
+      <div class="wind">Wind: ${windMax[i] + " " + wind}</div>
+      <div class="sunrise">Sunrise: ${new Intl.DateTimeFormat(
+        locale,
+        dailyOptionsSun
+      ).format(sunriseTime)}</div>
+      <div class="sunset">Sunset: ${new Intl.DateTimeFormat(
+        locale,
+        dailyOptionsSun
+      ).format(sunsetTime)}</div>
+    </div>
+      `;
+      carouselEl.insertAdjacentHTML("beforeend", html);
     }
   } catch (err) {
     displayError(err);

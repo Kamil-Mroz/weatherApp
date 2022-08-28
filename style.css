@@ -111,6 +111,9 @@ body {
 .card {
   display: flex;
   flex-direction: column;
+  background-color: #f8f9fa;
+  color: #111;
+  font-size: 1.6rem;
   border: 1px solid #f8f9fa;
   border-radius: 10px;
   gap: 2rem;
