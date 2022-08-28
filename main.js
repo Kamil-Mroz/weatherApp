@@ -1,6 +1,3 @@
-// https://restcountries.com/v3.1/name/{name}
-// https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&hourly=temperature_2m
-
 const weatherCode = {
   0: "Clear sky",
   1: "Mainly clear",
@@ -163,27 +160,6 @@ const getWeather = async (lat, lng, capital, flag) => {
     displayError(err);
   }
 };
-
-function createCard(
-  precipitationH,
-  precipitationSum,
-  sunrise,
-  sunset,
-  day,
-  tempMax,
-  tempMin,
-  windMax
-) {
-  const div = document.createElement("div");
-  div.classList.add("card");
-
-  const innerCard = `
-    
-    
-    `;
-
-  div.innerHTML = innerCard;
-}
 
 function displayError(message) {
   error.textContent = message;
